@@ -30,7 +30,7 @@ def knn():
 
 @app.route('/results_knn')
 def results_knn():
-    return render_template('templates/results_knn.html')
+    return render_template('results_knn.html')
 
 @app.route('/save-selection', methods=['POST'])
 def handle_selection():
