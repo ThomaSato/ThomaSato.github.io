@@ -280,12 +280,12 @@
                 .then(response => response.json())
                 .then(data => {
                     hideLoader();
-                    window.location.href = 'templates/results.html';
+                    window.location.href = '/templates/results.html';
                 })
                 .catch(error => {
                     console.error('Error:', error);
                     hideLoader();
-                    window.location.href = 'templates/results.html';
+                    window.location.href = '/templates/results.html';
                 });
         }
 
