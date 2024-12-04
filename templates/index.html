@@ -1,0 +1,168 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Moodify</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+    <style>
+        .loader-container {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.5);
+            z-index: 9999;
+            justify-content: center;
+            align-items: center;
+            flex-direction: column;
+        }
+        .loader {
+            border: 5px solid #f3f3f3;
+            border-top: 5px solid #3498db;
+            border-radius: 50%;
+            width: 50px;
+            height: 50px;
+            animation: spin 1s linear infinite;
+        }
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+        .loader-container p {
+            color: white;
+            margin-top: 10px;
+        }
+    </style>
+</head>
+<body>
+    <div class="banner"></div>
+    <div class="container">
+        <h1>Get your mood up by cooking your own song 👩‍🍳</h1>
+        <p>💡 Your song will be generated using an amazing Transformer 💡</p>
+        <p>🤥 Fine-tuned by our amazing Moodify team 🤥</p>
+
+        <h2>1️⃣ Select your mood</h2>
+        <div class="mood-container">
+            <div class="box mood" data-mood="Angry">
+                <img src="https://static.vecteezy.com/system/resources/previews/007/411/283/non_2x/cute-emotional-coin-anger-character-funny-cartoon-money-vector.jpg" alt="Angry mood">
+                <span>Angry</span>
+            </div>
+            <div class="box mood" data-mood="Sad">
+                <img src="https://static.vecteezy.com/system/resources/previews/007/411/294/large_2x/cute-emotional-coin-sad-character-funny-cartoon-money-vector.jpg" alt="Sad mood">
+                <span>Sad</span>
+            </div>
+            <div class="box mood" data-mood="Chill">
+                <img src="https://static.vecteezy.com/system/resources/previews/007/411/292/non_2x/cute-smile-emotional-coin-character-funny-cartoon-money-isolated-on-white-background-vector.jpg" alt="Chill mood">
+                <span>Chill</span>
+            </div>
+            <div class="box mood" data-mood="Energy">
+                <img src="https://static.vecteezy.com/system/resources/previews/007/411/293/non_2x/cute-smile-emotional-coin-character-funny-cartoon-money-isolated-on-white-background-vector.jpg" alt="Energy mood">
+                <span>Energy</span>
+            </div>
+            <div class="box mood" data-mood="Happy">
+                <img src="https://static.vecteezy.com/system/resources/previews/007/411/290/non_2x/cute-enamored-smile-emotional-coin-character-funny-cartoon-money-vector.jpg" alt="Happy mood">
+                <span>Happy</span>
+            </div>
+        </div>
+
+        <h2>2️⃣ Select your Theme</h2>
+        <div class="theme-container">
+            <div class="box theme" data-theme="Celebration">🎊 Celebration</div>
+            <div class="box theme" data-theme="Devotion">🙏 Devotion</div>
+            <div class="box theme" data-theme="Nostalgia">🥲 Nostalgia</div>
+            <div class="box theme" data-theme="Love">❤️ Love</div>
+            <div class="box theme" data-theme="Heartbreak">💔 Heartbreak</div>
+            <div class="box theme" data-theme="Despair">🫠 Despair</div>
+            <div class="box theme" data-theme="Chaos">🤯 Chaos</div>
+            <div class="box theme" data-theme="Survival">🛠️ Survival</div>
+            <div class="box theme" data-theme="Solitude">😪 Loneliness</div>
+            <div class="box theme" data-theme="Reflection">🤔 Reflection</div>
+        </div>
+
+        <h2>3️⃣ Write the first lyrics of your song, use maximum 5 words</h2>
+        <div class="description-container">
+            <textarea id="description" maxlength="100" rows="3"></textarea>
+            <button id="generate-btn" onclick="generateSong()">💎 Generate 💎</button>
+        </div>
+        <div id="result"></div>
+    </div>
+    <div class="home-button-container">
+        <a href="/" class="home-button">🏠 Back to Homepage</a>
+    </div>
+
+    <div class="loader-container">
+        <div class="loader"></div>
+        <p>Generating your song...</p>
+    </div>
+
+    <script>
+        function showLoader() {
+            document.querySelector('.loader-container').style.display = 'flex';
+        }
+
+        function hideLoader() {
+            document.querySelector('.loader-container').style.display = 'none';
+        }
+
+        function generateSong() {
+            const selectedMood = document.querySelector('.mood.selected')?.dataset.mood;
+            const selectedTheme = document.querySelector('.theme.selected')?.dataset.theme;
+            const lyrics = document.getElementById('description').value;
+
+            if (!selectedMood || !selectedTheme || !lyrics) {
+                alert('Please select a mood, theme, and enter lyrics.');
+                return;
+            }
+
+            localStorage.setItem('selectedMood', selectedMood);
+            localStorage.setItem('selectedTheme', selectedTheme);
+            localStorage.setItem('lyrics', lyrics);
+
+            showLoader();
+
+            const apiUrl = `https://moodify-298744221239.europe-west1.run.app/gen_lyrics?user_prompt=${encodeURIComponent(lyrics)}&theme=${encodeURIComponent(selectedTheme)}`;
+
+            fetch(apiUrl)
+                .then(response => response.text())
+                .then(generatedLyrics => {
+                    localStorage.setItem('generatedLyrics', generatedLyrics);
+                    return fetch('/generate-song', {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                        },
+                        body: JSON.stringify({ mood: selectedMood, theme: selectedTheme, lyrics: lyrics }),
+                    });
+                })
+                .then(response => response.json())
+                .then(data => {
+                    hideLoader();
+                    window.location.href = '/results';
+                })
+                .catch(error => {
+                    console.error('Error:', error);
+                    hideLoader();
+                    window.location.href = '/results';
+                });
+        }
+
+        // Add event listeners for mood and theme selection
+        document.querySelectorAll('.mood').forEach(mood => {
+            mood.addEventListener('click', function() {
+                document.querySelectorAll('.mood').forEach(m => m.classList.remove('selected'));
+                this.classList.add('selected');
+            });
+        });
+
+        document.querySelectorAll('.theme').forEach(theme => {
+            theme.addEventListener('click', function() {
+                document.querySelectorAll('.theme').forEach(t => t.classList.remove('selected'));
+                this.classList.add('selected');
+            });
+        });
+    </script>
+</body>
+</html>

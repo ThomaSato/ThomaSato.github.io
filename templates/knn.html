@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Moodify</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+    <style>
+        .generate-btn-knn {
+            background-color: #4CAF50;
+            border: none;
+            color: white;
+            padding: 15px 32px;
+            text-align: center;
+            text-decoration: none;
+            display: inline-block;
+            font-size: 16px;
+            margin: 4px 2px;
+            cursor: pointer;
+            border-radius: 12px;
+            transition: background-color 0.3s;
+        }
+        .generate-btn-knn:hover {
+            background-color: #45a049;
+        }
+    </style>
+</head>
+
+<body>
+  <div class="banner"></div>
+  <div class="container">
+      <h1>Cook your song 👩‍🍳</h1>
+      <p>💡 Your song will be generated using KNN 💡</p>
+
+      <h2>1️⃣ Select your Theme</h2>
+        <div class="theme-container">
+            <div class="box theme" data-theme="Celebration">🎊 Celebration</div>
+            <div class="box theme" data-theme="Devotion">🙏 Devotion</div>
+            <div class="box theme" data-theme="Nostalgia">🥲 Nostalgia</div>
+            <div class="box theme" data-theme="Love">❤️ Love</div>
+            <div class="box theme" data-theme="Heartbreak">💔 Heartbreak</div>
+            <div class="box theme" data-theme="Despair">🫠 Despair</div>
+            <div class="box theme" data-theme="Chaos">🤯 Chaos</div>
+            <div class="box theme" data-theme="Survival">🛠️ Survival</div>
+            <div class="box theme" data-theme="Solitude">😪 Loneliness</div>
+            <div class="box theme" data-theme="Reflection">🤔 Reflection</div>
+        </div>
+      </div>
+  </div>
+
+        <h2>2️⃣ Write the first lyrics of your song, use maximum 5 words</h2>
+        <div class="description-container">
+            <textarea id="description" maxlength="100" rows="3"></textarea>
+            <button id="generate-btn" class="generate-btn-knn">💎 Generate 💎</button>
+        </div>
+
+        <div id="results_knn"></div>
+    </div>
+    <div class="home-button-container">
+      <a href="/" class="home-button">🏠 Back to Homepage</a>
+  </div>
+    <script>
+    document.addEventListener('DOMContentLoaded', function() {
+        const themeBoxes = document.querySelectorAll('.theme');
+        const descriptionInput = document.getElementById('description');
+        const generateBtn = document.getElementById('generate-btn');
+
+        let selectedTheme = '';
+
+        themeBoxes.forEach(box => {
+            box.addEventListener('click', function() {
+                themeBoxes.forEach(b => b.classList.remove('selected'));
+                this.classList.add('selected');
+                selectedTheme = this.getAttribute('data-theme');
+            });
+        });
+
+        generateBtn.addEventListener('click', function() {
+            const initialLyrics = descriptionInput.value.trim();
+
+            if (selectedTheme && initialLyrics) {
+                localStorage.setItem('selectedTheme', selectedTheme);
+                localStorage.setItem('initialLyrics', initialLyrics);
+                window.location.href = '/results_knn';
+            } else {
+                alert('Please select a theme and enter initial lyrics.');
+            }
+        });
+    });
+    </script>
+</body>
+</html>

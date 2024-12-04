@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Your Generated Song</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+    <div class="container">
+        <h1>☀️ Here is your custom song ☀️</h1>
+        <h2>👇 Quick reminder of your selection:</h2>
+
+        <div class="details-container">
+          <div class="detail-box">
+            <h3>Mood</h3>
+            <p id="mood"></p>
+          </div>
+          <div class="detail-box">
+            <h3>Theme</h3>
+            <p id="theme"></p>
+          </div>
+          <div class="detail-box">
+            <h3>Description</h3>
+            <p id="initial-lyrics"></p>
+          </div>
+        </div>
+        <hr class="separator">
+
+        <h2>🎧 Listen to your Song:</h2>
+        <div id="music-player">
+            <audio controls>
+                <source src="{{ url_for('static', filename='generated_song.mp3') }}" type="audio/mpeg">
+                Your browser does not support the audio element.
+            </audio>
+        </div>
+        <hr class="separator">
+        <div id="generated-song">
+          <h2>📝 Generated Lyrics:</h2>
+          <div id="lyrics-content">
+          </div>
+        </div>
+    </div>
+    <div class="home-button-container">
+      <a href="/" class="home-button">🏠 Back to Homepage</a>
+    </div>
+
+    <script>
+    document.addEventListener('DOMContentLoaded', function() {
+        const moodElement = document.getElementById('mood');
+        const themeElement = document.getElementById('theme');
+        const initialLyricsElement = document.getElementById('initial-lyrics');
+        const lyricsContent = document.getElementById('lyrics-content');
+
+        // Update the details on the page
+        if (moodElement) moodElement.textContent = localStorage.getItem('selectedMood') || 'N/A';
+        if (themeElement) themeElement.textContent = localStorage.getItem('selectedTheme') || 'N/A';
+        if (initialLyricsElement) initialLyricsElement.textContent = localStorage.getItem('lyrics') || 'N/A';
+
+        // Display the generated lyrics
+        const generatedLyrics = localStorage.getItem('generatedLyrics');
+
+        if (generatedLyrics) {
+            // Split the lyrics into lines and create paragraph elements
+            const lyricsLines = generatedLyrics.split('\n');
+            lyricsContent.innerHTML = ''; // Clear any existing content
+            lyricsLines.forEach(line => {
+                const p = document.createElement('p');
+                p.textContent = line;
+                lyricsContent.appendChild(p);
+            });
+        } else {
+            lyricsContent.textContent = 'Sorry, we couldn\'t retrieve the generated lyrics.';
+        }
+
+        // Clear localStorage after displaying the results
+        localStorage.removeItem('selectedMood');
+        localStorage.removeItem('selectedTheme');
+        localStorage.removeItem('lyrics');
+        localStorage.removeItem('generatedLyrics');
+    });
+    </script>
+</body>
+</html>

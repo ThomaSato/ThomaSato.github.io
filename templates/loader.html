@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Loading...</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+    <div class="loader-container">
+        <div class="loader"></div>
+        <p>Generating your song...</p>
+    </div>
+
+    <script>
+      const selectedMood = localStorage.getItem('selectedMood');
+      const selectedTheme = localStorage.getItem('selectedTheme');
+      const lyrics = localStorage.getItem('lyrics');
+
+      function generateLyrics() {
+          const apiUrl = `https://moodify-298744221239.europe-west1.run.app/gen_lyrics?user_prompt=${encodeURIComponent(lyrics)}&theme=${encodeURIComponent(selectedTheme)}`;
+
+          fetch(apiUrl)
+              .then(response => {
+                  if (!response.ok) {
+                      throw new Error('Network response was not ok');
+                  }
+                  return response.text();
+              })
+              .then(generatedLyrics => {
+                  localStorage.setItem('generatedLyrics', generatedLyrics);
+                  return fetch('/generate-song', {
+                      method: 'POST',
+                      headers: {
+                          'Content-Type': 'application/json',
+                      },
+                      body: JSON.stringify({ mood: selectedMood, theme: selectedTheme, lyrics: lyrics }),
+                  });
+              })
+              .then(response => {
+                  if (!response.ok) {
+                      throw new Error('Error generating song');
+                  }
+                  return response.json();
+              })
+              .then(data => {
+                  window.location.href = '/results';
+              })
+              .catch(error => {
+                  console.error('Error:', error);
+                  alert('An error occurred while generating the song. Please try again.');
+                  window.location.href = '/';
+              });
+      }
+
+      // Set a minimum display time for the loader
+      const minLoaderTime = 1000; // 1 second
+
+      // Start the API call
+      const apiCallStart = Date.now();
+      generateLyrics();
+
+      // Ensure the loader is displayed for at least the minimum time
+      setTimeout(() => {
+          const elapsedTime = Date.now() - apiCallStart;
+          if (elapsedTime < minLoaderTime) {
+              setTimeout(() => {
+                  // This will only redirect if the API call hasn't already done so
+                  if (window.location.pathname === '/loader') {
+                      window.location.href = '/results';
+                  }
+              }, minLoaderTime - elapsedTime);
+          }
+      }, minLoaderTime);
+    </script>
+</body>
+</html>
