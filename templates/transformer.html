@@ -4,8 +4,145 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Moodify</title>
-    <link rel="stylesheet" href="static/style.css">
     <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #191414;
+            color: #FFFFFF;
+            margin: 0;
+            padding: 0;
+        }
+
+        h1 {
+            color: #1DB954;
+            text-align: center;
+        }
+
+        h2 {
+            color: #1DB954;
+            margin: 40px auto 20px;
+            max-width: 800px;
+            width: 100%;
+            text-align: left;
+            padding: 0 10px;
+            box-sizing: border-box;
+        }
+
+        p {
+            color: #ffffff;
+            margin-top: 5px;
+            text-align: center;
+        }
+
+        .mood-container, .theme-container, .description-container {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            gap: 10px;
+            margin: 20px auto;
+            max-width: 800px;
+            width: 100%;
+        }
+
+        .box {
+            background-color: #282828;
+            color: #FFFFFF;
+            padding: 15px;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: background-color 0.3s;
+            flex: 0 0 calc(20% - 10px);
+            max-width: calc(20% - 10px);
+            box-sizing: border-box;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .box img {
+            width: 100px;
+            height: 100px;
+            object-fit: cover;
+            border-radius: 50%;
+        }
+
+        .box span {
+            font-weight: bold;
+        }
+
+        .box:hover, .box.selected {
+            background-color: #1DB954;
+        }
+
+        .description-container {
+            flex-direction: column;
+            align-items: stretch;
+        }
+
+        textarea {
+            flex-grow: 1;
+            background-color: #5a5959;
+            color: #FFFFFF;
+            border: none;
+            padding: 10px;
+            border-radius: 5px;
+            width: 100%;
+            box-sizing: border-box;
+        }
+
+        button {
+            background-color: #1DB954;
+            color: #FFFFFF;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: background-color 0.3s;
+            align-self: center;
+            width: auto;
+            min-width: 200px;
+        }
+
+        button:hover {
+            background-color: #1ED760;
+        }
+
+        #result {
+            margin-top: 20px;
+            padding: 10px;
+            background-color: #282828;
+            border-radius: 5px;
+        }
+
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        .home-button-container {
+            text-align: center;
+            margin-top: 30px;
+        }
+
+        .home-button {
+            display: inline-block;
+            background-color: transparent;
+            color: #4CAF50;
+            padding: 10px 20px;
+            border-radius: 5px;
+            text-decoration: none;
+            font-weight: bold;
+            transition: background-color 0.3s, color 0.3s;
+            border: 2px solid #4CAF50;
+        }
+
+        .home-button:hover {
+            background-color: #FFFFFF;
+            color: #191414;
+        }
+
         .loader-container {
             display: none;
             position: fixed;
@@ -19,6 +156,7 @@
             align-items: center;
             flex-direction: column;
         }
+
         .loader {
             border: 5px solid #f3f3f3;
             border-top: 5px solid #3498db;
@@ -27,10 +165,12 @@
             height: 50px;
             animation: spin 1s linear infinite;
         }
+
         @keyframes spin {
             0% { transform: rotate(0deg); }
             100% { transform: rotate(360deg); }
         }
+
         .loader-container p {
             color: white;
             margin-top: 10px;
