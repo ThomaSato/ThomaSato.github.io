@@ -68,7 +68,7 @@ def generate():
 
 @app.route('/results')
 def results():
-    return render_template('templates/results.html')
+    return render_template('results.html')
 
 @app.route('/generate-song', methods=['POST'])
 def generate_song():
