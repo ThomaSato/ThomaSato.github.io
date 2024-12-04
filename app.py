@@ -18,11 +18,11 @@ app = Flask(__name__)
 
 @app.route('/')
 def home():
-    return render_template('home.html')
-
-@app.route('/index')
-def index():
     return render_template('index.html')
+
+@app.route('/transformer')
+def transformer():
+    return render_template('transformer.html')
 
 @app.route('/knn')
 def knn():
